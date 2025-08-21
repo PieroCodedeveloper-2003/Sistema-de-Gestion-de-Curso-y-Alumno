@@ -1,0 +1,179 @@
+<div class="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md my-12">
+  
+  <!-- Formulario: crear/editar alumno -->
+  <label for="nombre" class="block mb-3 text-gray-800 font-semibold text-lg">Registrar Alumno</label>
+  <form (ngSubmit)="guardarAlumno()" #alumnoForm="ngForm" class="mb-6 space-y-4">
+    <!--* (ngSubmit) → llama a guardarAlumno() cuando se envía el formulario -->
+    <!--* #alumnoForm="ngForm" → referencia del formulario para validaciones y estado -->
+    <!--* class="space-y-4" → separa verticalmente los inputs -->
+    <div class="grid grid-cols-2 gap-4">
+
+      <!-- Nombre -->
+      <input
+        name="nombre"
+        [(ngModel)]="nuevoAlumno.nombre"
+        required
+        placeholder="Nombre"
+        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+      <!--* [(ngModel)] → two-way binding con nuevoAlumno.nombre -->
+      <!--* required → obligatorio -->
+
+      <!-- Apellido -->
+      <input
+        name="apellido"
+        [(ngModel)]="nuevoAlumno.apellido"
+        required
+        placeholder="Apellido"
+        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+      <!--* Two-way binding con nuevoAlumno.apellido -->
+
+      <!-- DNI 
+       <input
+          name="dni"
+          [(ngModel)]="nuevoAlumno.dni"
+          required
+          placeholder="DNI"
+          class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+       Two-way binding con nuevoAlumno.dni -->
+
+      <!-- Sexo -->
+      <select
+        name="sexo"
+        [(ngModel)]="nuevoAlumno.sexo"
+        required
+        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      >
+        <option value="" disabled>Sexo</option>
+        <option value="M">M</option>
+        <option value="F">F</option>
+      </select>
+      <!--* Two-way binding con nuevoAlumno.sexo -->
+      <!--* opción deshabilitada como placeholder -->
+      <!--* required → obligatorio seleccionar -->
+
+      <!-- Distrito -->
+      <input
+        name="distrito"
+        [(ngModel)]="nuevoAlumno.distrito"
+        required
+        placeholder="Distrito"
+        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+      <!--* Two-way binding con nuevoAlumno.distrito -->
+
+      <!-- Fecha de matrícula -->
+      <input
+        name="fechaMatricula"
+        [(ngModel)]="nuevoAlumno.fechaMatricula"
+        type="date"
+        required
+        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+      <!--* Two-way binding con nuevoAlumno.fechaMatricula -->
+      <!--* type="date" para mostrar selector de fecha -->
+
+      <!-- Combobox de cursos -->
+      <select
+        name="curso"
+        [(ngModel)]="nuevoAlumno.curso.idCurso"
+        required
+        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      >
+        <option [ngValue]="0" disabled>Selecciona curso</option>
+        <option *ngFor="let c of cursos" [ngValue]="c.idCurso">{{ c.nombre }}</option>
+      </select>
+      <!--* *ngFor → recorre cursos para crear opciones -->
+      <!--* ngValue → enlaza opción con idCurso -->
+      <!--* Two-way binding con nuevoAlumno.curso.idCurso -->
+
+    </div>
+
+    <!-- Mensaje breve de validación -->
+    <!--* Se muestra solo si el formulario es inválido y usuario ha interactuado -->
+    <p *ngIf="alumnoForm.invalid && (alumnoForm.touched || alumnoForm.dirty)" 
+       class="text-sm text-red-600 mt-2">
+      Completa los campos obligatorios.
+    </p>
+
+    <!--todotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodo-->
+
+    <!-- Botones -->
+     <!--* Botón enviar -->
+      <!--* [disabled] → deshabilita botón si formulario inválido -->
+      <!--* {{ editando ? 'Actualizar' : 'Agregar' }} → cambia texto según estado -->
+    <div class="mt-4 flex gap-3">
+      <button type="submit" [disabled]="alumnoForm.invalid" 
+        class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold px-8 py-3 rounded-md shadow-md transition">
+        {{ editando ? 'Actualizar' : 'Agregar' }}
+      </button>
+
+      <!--* Botón cancelar visible solo en edición -->
+      <!--* llama a cancelar() para limpiar formulario -->
+      <button type="button" (click)="cancelar()" *ngIf="editando" 
+        class="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-6 py-3 rounded-md shadow-md transition">
+        Cancelar
+      </button>
+    </div>
+  </form>
+
+  <!--todotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodo-->
+
+  <!-- Tabla de alumnos -->
+  <div class="overflow-x-auto">
+  <table class="w-full border-collapse border border-gray-300 text-gray-800">
+    <thead class="bg-gray-100 text-gray-700 uppercase text-sm font-semibold">
+    <tr>
+      <th class="border border-gray-300 px-4 py-3 text-center">ID</th>
+      <th class="border border-gray-300 px-4 py-3 text-center">Nombre</th>
+      <th class="border border-gray-300 px-4 py-3 text-center">Apellido</th>
+      <!--<th class="border border-gray-300 px-4 py-3 text-center">DNI</th>-->
+      <th class="border border-gray-300 px-4 py-3 text-center">Sexo</th>
+      <th class="border border-gray-300 px-4 py-3 text-center">Distrito</th>
+      <th class="border border-gray-300 px-4 py-3 text-center">Fecha</th>
+      <th class="border border-gray-300 px-4 py-3 text-center">Curso</th>
+      <th class="border border-gray-300 px-4 py-3 text-center">Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let a of alumnos" class="hover:bg-indigo-50 transition">
+      <td class="border border-gray-300 px-4 py-3 text-center">{{ a.idAlumno }}</td>
+      <td class="border border-gray-300 px-4 py-3 text-center">{{ a.nombre }}</td>
+      <td class="border border-gray-300 px-4 py-3 text-center">{{ a.apellido }}</td>
+      <!--<td class="border border-gray-300 px-4 py-3 text-center">{{ a.dni }}</td>-->
+      <td class="border border-gray-300 px-4 py-3 text-center">{{ a.sexo }}</td>
+      <td class="border border-gray-300 px-4 py-3 text-center">{{ a.distrito }}</td>
+      <td class="border border-gray-300 px-4 py-3 text-center">{{ a.fechaMatricula }}</td>
+      <td class="border border-gray-300 px-4 py-3 text-center">{{ a.curso ? a.curso.nombre : '' }}</td>
+      <td class="p-3 border-b text-center space-x-2">
+
+        <!--* Botón editar llama a prepararEdicion() pasando el alumno seleccionado -->
+        <button (click)="prepararEdicion(a)" 
+          class="bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-1 px-4 rounded-md shadow-sm transition"
+          aria-label="Editar curso">
+          Editar
+        </button>
+
+        <!--* Botón eliminar llama a eliminarAlumno() pasando id del alumno -->
+        <button (click)="eliminarAlumno(a.idAlumno!)" 
+          class="bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-4 rounded-md shadow-sm transition"
+          aria-label="Eliminar curso">
+          Eliminar
+        </button>
+      </td>
+    </tr>
+
+    <!-- Caso vacío  colspan="9"-->
+    <!--* Se muestra si la lista de alumnos está vacía -->
+    <tr *ngIf="alumnos.length === 0">
+      <td colspan="8" class="p-4 text-center text-gray-500 italic">
+        No hay alumnos para mostrar
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+  </div>
+</div>

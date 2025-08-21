@@ -1,0 +1,115 @@
+<div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md flex flex-col justify-center my-20">
+  
+  <form (ngSubmit)="agregarCurso()" #cursoForm="ngForm" novalidate class="mb-8">
+  <!--* Event Binding → (ngSubmit) llama al método agregarCurso() cuando se envía el formulario -->
+  <!--* Uso de ngForm → #cursoForm referencia al formulario para validaciones -->
+  <!--* novalidate → desactiva la validación nativa del navegador y usamos la de Angular -->
+
+    <label for="nombre" class="block mb-3 text-gray-800 font-semibold text-lg">Registrar Curso</label>
+    <input
+      type="text"
+      id="nombre"
+      name="nombre"
+      [(ngModel)]="nuevoCurso.nombre"
+      #nombre="ngModel"
+      required
+      class="w-full border border-gray-300 rounded-md px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+      placeholder="Escribe el nombre del curso"
+      autocomplete="off"
+    />
+    <!--* Two-way Binding: [(ngModel)]="nuevoCurso.nombre" enlaza el valor del input con la propiedad 'nuevoCurso.nombre' del componente, permitiendo lectura y escritura -->
+    <!--* Template Reference Variable: #nombre="ngModel" permite acceder al estado y validación del input desde el template -->
+    <!--* required: indica que este campo es obligatorio -->
+
+    <p class="mt-2 text-sm text-red-600" 
+       *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+       El nombre es obligatorio
+    </p>
+    <!--* Validación condicional con *ngIf: se muestra solo si el input es inválido -->
+    <!--* nombre.invalid -> el campo no cumple la validación (por ejemplo, está vacío) -->
+    <!--* nombre.dirty || nombre.touched -> el mensaje solo aparece si el usuario ha interactuado con el input -->
+    <!--* Resultado: muestra un mensaje de error "El nombre es obligatorio" solo cuando corresponde -->
+
+    <!--todotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodo-->
+
+    <div class="flex items-center gap-4 mt-6">
+      <button
+        type="submit"
+        [disabled]="cursoForm.invalid"
+        class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold px-8 py-3 rounded-md shadow-md transition">
+        {{ editando ? 'Actualizar' : 'Agregar' }} Curso
+      </button>
+      <!--* Botón de envío del formulario -->
+      <!--* Property Binding [disabled]="cursoForm.invalid" → desactiva el botón si el formulario no es válido -->
+      <!--* Interpolación {{ editando ? 'Actualizar' : 'Agregar' }} → cambia el texto según el estado del formulario -->
+
+      <button
+        type="button"
+        (click)="limpiarFormulario()"
+        *ngIf="editando"
+        class="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-6 py-3 rounded-md shadow-md transition">
+        Cancelar
+      </button>
+      <!--* Botón para cancelar la edición y limpiar el formulario -->
+      <!--* Event Binding (click)="limpiarFormulario()" → llama al método que resetea los campos -->
+      <!--* *ngIf="editando" → se muestra solo si estamos editando un curso -->
+    </div>
+
+  </form>
+
+  <!--todotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodotodo-->
+
+  <table class="w-full border-collapse border border-gray-300 text-gray-800">
+    <thead class="bg-gray-100 text-gray-700 uppercase text-sm font-semibold">
+      <tr>
+        <th class="border border-gray-300 px-4 py-3 text-center">ID</th>
+        <th class="border border-gray-300 px-4 py-3 text-center">Nombre</th>
+        <th class="border border-gray-300 px-4 py-3 text-center">Cantidad de Alumnos</th>
+        <th class="border border-gray-300 px-4 py-3 text-center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!--* *ngFor → Directiva estructural que recorre la lista de cursos y crea una fila por cada curso -->
+      <tr *ngFor="let curso of cursos" class="hover:bg-indigo-50 transition">
+
+        <!--* Interpolación {{ curso.idCurso }} → muestra el ID del curso -->
+        <td class="border border-gray-300 px-4 py-3 text-center">{{ curso.idCurso }}</td>
+
+        <!--* Interpolación {{ curso.nombre }} → muestra el nombre del curso -->
+        <td class="border border-gray-300 px-4 py-3 text-center font-medium">{{ curso.nombre }}</td>
+
+        <!--* Interpolación con operador lógico {{ curso.cantidadAlumnos || 0 }} → muestra cantidad de alumnos, si no hay, muestra 0 -->
+        <td class="border border-gray-300 px-4 py-3 text-center">{{ curso.cantidadAlumnos || 0 }}</td>
+        <td class="border border-gray-300 px-4 py-3 text-center">
+          <div class="flex justify-center gap-3">
+
+            <!--* Botón Editar -->
+            <!--* Event Binding (click)="editarCurso(curso)" → llama al método del componente pasando el curso seleccionado -->
+            <button
+              (click)="editarCurso(curso)"
+              class="bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-1 px-4 rounded-md shadow-sm transition"
+              aria-label="Editar curso">
+              Editar
+            </button>
+
+            <!--* Botón Eliminar -->
+            <!--* Event Binding (click)="eliminarCurso(curso.idCurso!)" → llama al método del componente pasando el ID del curso a eliminar -->
+            <button
+              (click)="eliminarCurso(curso.idCurso!)"
+              class="bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-4 rounded-md shadow-sm transition"
+              aria-label="Eliminar curso">
+              Eliminar
+            </button>
+          </div>
+        </td>
+      </tr>
+      
+      <!--* Fila que se muestra si no hay cursos -->
+      <!--* *ngIf="cursos.length === 0" → Directiva estructural que muestra un mensaje cuando la lista está vacía -->
+      <tr *ngIf="cursos.length === 0">
+        <td colspan="4" class="text-center py-6 text-gray-500 italic">No hay cursos para mostrar</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
